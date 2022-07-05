@@ -53,7 +53,8 @@ def kirim_ems():
         s.quit()
 
 
-schedule.every().day.at("23:55").do(kirim_ems)
+schedule.every().day.at("00:02").do(kirim_ems)
+schedule.every().day.at("00:03").do(kirim_ems)
 while 1:
     schedule.run_pending()
     time.sleep(1)
