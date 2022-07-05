@@ -21,26 +21,39 @@ def kirim_ems():
     body = "Please find the attached file here.."
     msg.attach(MIMEText(body, 'plain'))
     print("pesan jadi ...! melampirkan file excel")
-    filename = tgl + ".xlsx"
-    attachment = open(filename, "rb")
-    p = MIMEBase('application', 'octet-stream')
-    p.set_payload((attachment).read())
-    encoders.encode_base64(p)
-    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    msg.attach(p)
-    print("mengirim email....ke " + ", ".join(toaddr))
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.starttls()
-    s.login(fromaddr, "eaauyyswikrxswzn")
-    text = msg.as_string()
-    s.sendmail(fromaddr, toaddr, text)
-    print("email terkirim ke " + ", ".join(toaddr))
-    print("laporan EMS tanggal..."+ tgl +" telah dikirim")
-    print("menunngu laporan hari esok trus kirim lagi..")
-    s.quit()
+
+    try:
+        filename = tgl + ".xlsx"
+        attachment = open(filename, "rb")
+        p = MIMEBase('application', 'octet-stream')
+        p.set_payload((attachment).read())
+        encoders.encode_base64(p)
+        p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        msg.attach(p)
+        print("mengirim email....ke " + ", ".join(toaddr))
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login(fromaddr, "eaauyyswikrxswzn")
+        text = msg.as_string()
+        s.sendmail(fromaddr, toaddr, text)
+        print("email terkirim ke " + ", ".join(toaddr))
+        print("laporan EMS tanggal..." + tgl + " telah dikirim")
+        print("menunngu laporan hari esok trus kirim lagi..")
+        s.quit()
+
+    except FileNotFoundError:
+        print("file tidak ditemukan")
+        body = "[FILE TIDAK DITEMUKAN]"
+        msg.attach(MIMEText(body, 'plain'))
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login(fromaddr, "eaauyyswikrxswzn")
+        text = msg.as_string()
+        s.sendmail(fromaddr, toaddr, text)
+        s.quit()
 
 
-schedule.every().day.at("23:36").do(kirim_ems)
+schedule.every().day.at("23:55").do(kirim_ems)
 while 1:
     schedule.run_pending()
     time.sleep(1)
