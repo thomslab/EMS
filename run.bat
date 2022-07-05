@@ -1,0 +1,1 @@
+start C:\thomiwocnad\tukarpulsa1.py

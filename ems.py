@@ -1,37 +1,35 @@
-from datetime import datetime
-import smtplib, ssl
+import smtplib
 from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
-from email.utils import formatdate
+from email.mime.base import MIMEBase
+from datetime import datetime
 from email import encoders
 
-
-def send_mail(send_from, send_to, subject, text, files, server, port, username='', password='', isTls=True):
-    tgl = datetime.today().strftime("%d-%m-%y")
-    server = "smtp.gmail.com"
-    password = "eaauyyswikrxswzn"
-    username = "thomihidayat1@gmail.com"
-    port = 
-    filename = tgl + ".xlsx"
-    msg = MIMEMultipart()
-    msg['From'] = "thomihidayat1@gmail.com"
-    msg['To'] = "hidayatthomi@gmail.com"
-    msg['Date'] = formatdate(localtime=True)
-    msg['Subject'] = "Ems daily report"
-    msg.attach(MIMEText(text))
-
-    part = MIMEBase('application', "octet-stream")
-    part.set_payload(open(filename, "rb").read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename={}'.format(filename))
-    msg.attach(part)
-
-    # context = ssl.SSLContext(ssl.PROTOCOL_SSLv3)
-    # SSL connection only working on Python 3+
-    smtp = smtplib.SMTP(server, port)
-    if isTls:
-        smtp.starttls()
-    smtp.login(username, password)
-    smtp.sendmail(send_from, send_to, msg.as_string())
-    smtp.quit()
+fromaddr = "thomihidayat1@gmail.com"
+toaddr = ["hidayatthomi@gmail.com","0001indahratna@gmail.com"]
+tgl = datetime.today().strftime("%d-%m-%y")
+# membuat MIMEMultipart
+print("membuat pesan....")
+msg = MIMEMultipart()
+msg['From'] = fromaddr
+msg['To'] = ", ".join(toaddr)
+msg['Subject'] = "EMS Daily Report "+ tgl
+body = "Please find the attached file here.."
+msg.attach(MIMEText(body, 'plain'))
+print("pesan jadi ...! melampirkan file excel")
+filename = tgl+".xlsx"
+attachment = open(filename, "rb")
+p = MIMEBase('application', 'octet-stream')
+p.set_payload((attachment).read())
+encoders.encode_base64(p)
+p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+msg.attach(p)
+print("mengirim email....ke "+ ", ".join(toaddr))
+s = smtplib.SMTP('smtp.gmail.com', 587)
+s.starttls()
+s.login(fromaddr, "eaauyyswikrxswzn")
+text = msg.as_string()
+s.sendmail(fromaddr, toaddr, text)
+print("email terkirim ke " + ", ".join(toaddr))
+print("mengakhiri sesi...")
+s.quit()
